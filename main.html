@@ -1,0 +1,57 @@
+<!doctype html>
+<html data-ng-app="emJira">
+
+<head>
+  <title>emJIRA - Tasks overview</title>
+  <link href="css/style.css" rel="stylesheet">
+  <script src="js/angular.min.js"></script>
+  <script src="app.js"></script>
+  <script src="js/app/popup.ctrl.js"></script>
+</head>
+
+<body ng-controller="popupCtrl">
+  <ul class="iss_list" ng-if="sortedIssues.length == 0">
+    <div class="iss_list-page-name">
+      <span>No data to show</span>
+    </div>
+  </ul>
+
+  <ul class="iss_list" ng-repeat="sortedIssue in sortedIssues track by $index">
+    <div class="iss_list-page-name" ng-click="showSortedIssue($index)">
+      <span>{{sortedIssue.pageName}}</span>
+      <span class="iss_list-page-name-btn" ng-class="{'iss_list-page-name-btn--opened':sortedIssue.show == true}">&lt;</span>
+    </div>
+    <li class="iss_list-item iss_list-item-small" ng-show="sortedIssue.show == true">
+      <span>
+         Updated: {{sortedIssue.lastUpdated | date: 'dd.MM.yyyy HH:mm'}}
+       </span>
+      <span>
+         Progress {{sortedIssue.doneNumber}} / {{sortedIssue.issuesLength}}
+       </span>
+      <span>
+         <a class="iss_list-show-done" ng-class="sortedIssue.showDone == true ? 'iss_list-show-done--false' : 'iss_list-show-done--true'" 
+         ng-click="hideDone($index)">{{sortedIssue.showDone == true ? 'hide' : 'show'}} done</a>
+      </span>
+    </li>
+    <li class="iss_list-item" ng-show="sortedIssue.show == true" ng-repeat="issue in sortedIssue.issues track by $index" ng-click="showIssue($parent.$index, $index)">
+      <img class="iss_list-item-img" src="img/unassigned.png" ng-src="{{issue.avatar}}">
+      <span class="iss_list-item-assignee">
+        {{issue.assignee}}
+        </span>
+      <span class="iss_list-item-status" ng-class="{'iss_list-item-status--done' : issue.todo == 0}"> {{issue.done}} / {{issue.todo + issue.done}}</span>
+      <ul class="iss_list-tasks" ng-show="issue.showTasks == true">
+        <li class="iss_list-tasks-item" ng-repeat="task in issue.tasks | orderBy : 'issueKey' track by $index" 
+        ng-hide="hideDoneTask(task, sortedIssue.showDone)">
+          <a target="_blank" ng-click="openTask(task.issueHref)">
+            {{generateTaskTitle(task.issueKey, task.issueTitle)}}
+          </a>
+          <span class="iss_list-tasks-item-state" ng-style="setIssueStateColor(task, sortedIssue.columns)">
+            {{task.column}}
+          </span>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</body>
+
+</html>
