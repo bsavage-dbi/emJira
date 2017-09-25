@@ -2,7 +2,9 @@ app.controller("popupCtrl", function ($scope, $timeout, $filter) {
   $scope.sortedIssues = [];
   var injectedTabsUrl = [];
   var emJiraData = localStorage.getItem('emJiraData');
-  $scope.sortedIssues = JSON.parse(emJiraData);
+  if (emJiraData != undefined) {
+    $scope.sortedIssues = JSON.parse(emJiraData);
+  }
 
   function checkForNewData() {
     chrome.windows.getAll(null, function (wins) {
@@ -25,8 +27,9 @@ app.controller("popupCtrl", function ($scope, $timeout, $filter) {
     var original = [];
     var tokens = [];
     angular.forEach($scope.sortedIssues, function (elem, index) {
-      if (tokens.indexOf(elem.token) == -1) {
-        tokens.push(elem.token);
+      var token = elem.token.substring(0, elem.token.indexOf('|'));
+      if (tokens.indexOf(token) == -1) {
+        tokens.push(token);
         original.push(elem);
       }
     });
@@ -34,6 +37,9 @@ app.controller("popupCtrl", function ($scope, $timeout, $filter) {
   }
 
   chrome.runtime.onMessage.addListener(function (msg) {
+    if($scope.sortedIssues == null || $scope.sortedIssues == undefined) { // TODO sprawdzic czemu tutaj byl null
+      $scope.sortedIssues = [];
+    }
     $timeout(function () {
       $scope.sortedIssues.push({
         pageName: msg.documentTitle,
@@ -133,6 +139,7 @@ app.controller("popupCtrl", function ($scope, $timeout, $filter) {
     var d = new Date();
     var n = d.toUTCString();
     $scope.sortedIssues = $filter('orderBy')($scope.sortedIssues, 'lastUpdated', true);
+    $scope.sortedIssues = delDuplicates();
     localStorage.setItem('emJiraData', JSON.stringify($scope.sortedIssues));
     localStorage.setItem('emJiraLastUpdate', n);
   }
