@@ -37,7 +37,7 @@ app.controller("popupCtrl", function ($scope, $timeout, $filter) {
   }
 
   chrome.runtime.onMessage.addListener(function (msg) {
-    if($scope.sortedIssues == null || $scope.sortedIssues == undefined) { // TODO sprawdzic czemu tutaj byl null
+    if(!$scope.sortedIssues) { 
       $scope.sortedIssues = [];
     }
     $timeout(function () {

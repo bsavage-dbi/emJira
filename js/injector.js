@@ -5,8 +5,7 @@ var documentTitle = document.title;
 documentTitle = documentTitle.replace('- Agile Board -', '-');
 documentUrl = document.URL;
 daysRem = document.URL;
-console.log(document.URL)
-var documentToken = document.getElementById('atlassian-token').getAttribute('content'); 
+var documentToken = document.getElementById('atlassian-token').getAttribute('content');
 
 function isolateAssigneeNameAndAvatarURL(taskDiv) {
     var imgsArray = taskDiv.getElementsByClassName('ghx-avatar-img');
@@ -31,9 +30,9 @@ function sortIssues() {
         var stepIssue = issues[i];
         if (assignee.indexOf(stepIssue.name) == -1) {
             assignee.push(stepIssue.name);
-            if(stepIssue.done == true) {
-                                        doneNumber = doneNumber + 1;
-                                    }
+            if (stepIssue.done == true) {
+                doneNumber = doneNumber + 1;
+            }
             sortedIssues.push({
                 assignee: stepIssue.name,
                 done: stepIssue.done == true ? 1 : 0,
@@ -51,7 +50,7 @@ function sortIssues() {
             for (var z = 0; z < sortedIssues.length; z++) {
                 var elem = sortedIssues[z];
                 if (elem.assignee == stepIssue.name) {
-                    if(stepIssue.done == true) {
+                    if (stepIssue.done == true) {
 
                         elem.done = elem.done + 1;
                         doneNumber = doneNumber + 1;
@@ -85,8 +84,9 @@ function sortIssues() {
 function extractColumnName(nodes) {
     for (var i = 0; i < nodes.length; i++) {
         var element = nodes[i];
-        if (element.tagName == 'H2') {
-            return element.innerText;
+        var tag = element.querySelector('H2');
+        if (tag) {
+            return tag.innerText;
         }
     }
 }
@@ -122,7 +122,7 @@ function getTaskColumnName(task) {
     var taskColumnId = searchForNodeWithColumnAtrr(task.parentElement);
     for (var i = 0; i < columnHeaders.length; i++) {
         var element = columnHeaders[i];
-        if(element.columnId == taskColumnId) {
+        if (element.columnId == taskColumnId) {
             return element.innerText;
         }
     }
