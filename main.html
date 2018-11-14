@@ -29,8 +29,8 @@
          Progress {{sortedIssue.doneNumber}} / {{sortedIssue.issuesLength}}
        </span>
       <span>
-         <a class="iss_list-show-done" ng-class="sortedIssue.showDone == true ? 'iss_list-show-done--false' : 'iss_list-show-done--true'" 
-         ng-click="hideDone($index)">{{sortedIssue.showDone == true ? 'hide' : 'show'}} done</a>
+        <a class="iss_list-show-done" ng-class="sortedIssue.burndown == true ? 'iss_list-show-done--false' : 'iss_list-show-done--true'" 
+        ng-click="burndown($index)">Burndown {{sortedIssue.burndown == true ? 'ON' : 'OFF'}}</a>
       </span>
     </li>
     <li class="iss_list-item" ng-show="sortedIssue.show == true" ng-repeat="issue in sortedIssue.issues track by $index" ng-click="showIssue($parent.$index, $index)">
@@ -38,10 +38,10 @@
       <span class="iss_list-item-assignee">
         {{issue.assignee}}
         </span>
-      <span class="iss_list-item-status" ng-class="{'iss_list-item-status--done' : issue.todo == 0}"> {{issue.done}} / {{issue.todo + issue.done}}</span>
+      <span class="iss_list-item-status" ng-class="{'iss_list-item-status--done' : issue.todo == 0}"> {{issue.todo}} / {{issue.qa}} / {{issue.done}}</span>
       <ul class="iss_list-tasks" ng-show="issue.showTasks == true">
         <li class="iss_list-tasks-item" ng-repeat="task in issue.tasks | orderBy : 'issueKey' track by $index" 
-        ng-hide="hideDoneTask(task, sortedIssue.showDone)">
+        ng-hide="hideTask(task, sortedIssue.burndown)">
           <a target="_blank" ng-click="openTask(task.issueHref)">
             {{generateTaskTitle(task.issueKey, task.issueTitle)}}
           </a>

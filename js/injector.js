@@ -28,6 +28,7 @@ function sortIssues() {
     var doneNumber = 0;
     for (var i = 0; i < issues.length; i++) {
         var stepIssue = issues[i];
+        
         if (assignee.indexOf(stepIssue.name) == -1) {
             assignee.push(stepIssue.name);
             if (stepIssue.done == true) {
@@ -37,12 +38,14 @@ function sortIssues() {
                 assignee: stepIssue.name,
                 done: stepIssue.done == true ? 1 : 0,
                 todo: stepIssue.done == false ? 1 : 0,
+                qa: stepIssue.column === 'qa review' ? 1 : 0,
                 avatar: stepIssue.avatar,
                 tasks: [{
                     issueTitle: stepIssue.issueTitle,
                     issueKey: stepIssue.issueKey,
                     issueHref: stepIssue.href,
                     done: stepIssue.done,
+                    todo: stepIssue.todo,
                     column: stepIssue.column
                 }]
             });
@@ -51,16 +54,18 @@ function sortIssues() {
                 var elem = sortedIssues[z];
                 if (elem.assignee == stepIssue.name) {
                     if (stepIssue.done == true) {
-
                         elem.done = elem.done + 1;
                         doneNumber = doneNumber + 1;
                     }
                     elem.todo = stepIssue.done == false ? (elem.todo + 1) : elem.todo;
+                    elem.qa = stepIssue.column === 'qa review' ? (elem.qa + 1) : elem.qa;
+                    
                     elem.tasks.push({
                         issueTitle: stepIssue.issueTitle,
                         issueKey: stepIssue.issueKey,
                         issueHref: stepIssue.href,
                         done: stepIssue.done,
+                        todo: stepIssue.todo,
                         column: stepIssue.column
                     });
                 }
@@ -140,6 +145,7 @@ function activate() {
         var task = isolateAssigneeNameAndAvatarURL(divs[i]);
         task.href = findTaskHref(divs[i]);
         task.column = getTaskColumnName(divs[i]);
+        task.todo = task.column === 'fix it!' || task.column === 'to do' ? true : false;
         task.done = divs[i].classList.value.indexOf('ghx-done') != -1 ? true : false;
         task.issueKey = (divs[i].dataset.issueKey);
         task.issueTitle = (divs[i].firstChild.innerText);

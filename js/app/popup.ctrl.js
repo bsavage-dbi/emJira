@@ -49,7 +49,6 @@ app.controller("popupCtrl", function ($scope, $timeout, $filter) {
         lastUpdated: new Date(msg.updated),
         doneNumber: msg.doneNumber,
         issuesLength: msg.issuesLength,
-        showDone: true,
         issues: $filter('orderBy')(msg.sortedIssues, 'assignee')
       });
       var d = new Date();
@@ -90,52 +89,33 @@ app.controller("popupCtrl", function ($scope, $timeout, $filter) {
   };
 
   $scope.setIssueStateColor = function (issue, columnData) {
-    var danger = columnColors[0];
-    var codeReview = columnColors[1];
-    var midDanger = columnColors[2];
-    var doce = columnColors[columnColors.length - 1];
     for (var i = 0; i < columnData.length; i++) {
       var element = columnData[i];
       if (element.innerText == issue.column) {
-        if (element.innerText == 'code review') {
-          return {
-            'background-color': codeReview
-          };
-        }
-        if (element.position == 0 || element.innerText == 'to do') {
-          return {
-            'background-color': danger
-          };
-        }
-        if (element.position == (columnData.length - 1)) {
-          return {
-            'background-color': doce
-          };
-        }
         return {
-          'background-color': midDanger
+          'background-color': columnColors[i]
         };
       }
     }
   };
 
-  $scope.hideDone = function ($index) {
-    $scope.sortedIssues[$index].showDone = !$scope.sortedIssues[$index].showDone;
-  };
+  $scope.burndown = function($index) {
+    $scope.sortedIssues[$index].burndown = !$scope.sortedIssues[$index].burndown;
+  }
 
-  $scope.hideDoneTask = function (task, showDone) {
-    if (task.done != true || showDone == true || showDone == undefined) {
-      return false;
+  $scope.hideTask = function (task, burndown) {
+    if (burndown == true && task.todo == true) {
+      return false
     }
+    
+    if (!burndown) {
+      return false
+    }   
+    
     return true;
   };
 
   function fixBrokenAndOutdatedData() {
-    angular.forEach($scope.sortedIssues, function (value, key) {
-      if (!value.showDone) {
-        value.showDone = true;
-      }
-    });
     var d = new Date();
     var n = d.toUTCString();
     $scope.sortedIssues = $filter('orderBy')($scope.sortedIssues, 'lastUpdated', true);
